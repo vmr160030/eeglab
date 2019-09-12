@@ -4,6 +4,7 @@
 % Author : Vyom Raval
 % Email: vmr160030@utdallas.edu
 % Date created: 09/12/2019
+% Tested on: eeglab14.0.0b
 
 % TODO: Make this a function that takes inputs
 
