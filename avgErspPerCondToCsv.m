@@ -15,10 +15,13 @@
 strOutputCsv = 'K:\Dept\CallierResearch\Maguire\RA Folders\Vyom\ManjuTest_norepeats.csv'; % Path to file you want to save
 arrTimeRange = [0 4000];
 arrFreqRange = [9 12];
+
+% Ensure that this has no repeats and each electrode is
+% typed correctly with no spaces like 'C1'
 cElecs = {'FP1', 'FPZ', 'AF3', 'F7', 'F5', 'F3', 'F1', 'FZ',...
-          'F2', 'F4', 'FT7', 'FCZ', 'FC2', 'CZ', 'C2', ' Tp8',...
+          'F2', 'F4', 'FT7', 'FCZ', 'FC2', 'CZ', 'C2', 'TP8',...
           'P2', 'P4', 'P6', 'P8', 'CB1','PO7', 'PO5', 'POZ', 'PO4',...
-          'PO6', 'PO8', 'CB2', 'O1', 'OZ', 'O2'}; % Ensure that this has no repeats
+          'PO6', 'PO8', 'CB2', 'O1', 'OZ', 'O2'}; 
 %%%%%%%%%%%%%%%%%%%%%%%% USER INPUT ZONE ENDS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Check for repeats
