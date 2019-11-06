@@ -4,16 +4,20 @@
 % Author : Vyom Raval
 % Email: vmr160030@utdallas.edu
 % Date created: 09/12/2019
-% Tested on: eeglab14.0.0b
+% Last modified: 11/06/2019
+% Tested on: eeglab14.0.0b, eeglab14.1.1b
+% Tested using: K:\Dept\CallierResearch\Maguire\RA Folders\Manju\Working Memory\14yrs All 091919.study 
 
 % TODO: Make this a function that takes inputs
 
 % Variable prefixes indicate data type
-strOutputCsv = 'K:\Dept\CallierResearch\Maguire\RA Folders\Vyom\Test.csv'; % Path to file you want to save
-arrTimeRange = [3000 4000];
+strOutputCsv = 'K:\Dept\CallierResearch\Maguire\RA Folders\Vyom\ManjuTest.csv'; % Path to file you want to save
+arrTimeRange = [0 4000];
 arrFreqRange = [9 12];
-cElecs = {'FPZ', 'FP4', 'AF4', 'F3', 'F1', 'FZ', 'F2',...
-    'F4', 'F6', 'FC2', 'FC4', 'FC6', 'FT8', 'C2', 'C4', 'C6', 'CP2', 'CP4', 'CP6', 'TP8'};
+cElecs = {'FP1', 'FPZ', 'AF3', 'F7', 'F5', 'F3', 'F1', 'FZ',...
+    'F2', 'F4', 'FT7', 'F5', 'F3', 'F1', 'FZ', 'F2', 'F4', 'FT7',...
+    'FCZ', 'FC2', 'CZ', 'C2', ' Tp8', 'P2', 'P4', 'P6', 'P8', 'CB1',...
+    'PO7', 'PO5', 'POZ', 'PO4', 'PO6', 'PO8', 'CB2', 'O1', 'OZ', 'O2'};
 
 %Compute ersp with std_erspplot
 STUDY = pop_statparams(STUDY, 'groupstats','on','condstats','on',...
