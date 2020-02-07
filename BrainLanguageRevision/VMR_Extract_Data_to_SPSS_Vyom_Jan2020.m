@@ -12,7 +12,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%% USER INPUT ZONE BEGINS %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Variable prefixes indicate data type
-strOutputCsv = 'C:\eeglab14_1_1b\scriptsForDrMaguire\BrainLanguageRevision\ManjuTest.csv'; % Path to file you want to save
+strOutputCsv = 'C:\eeglab14_1_2b\vyom-git-eeglab-master\BrainLanguageRevision\test.csv'; % Path to file you want to save
 arrTimeRange = [0 4000];
 arrFreqRange = [4 8];
 
