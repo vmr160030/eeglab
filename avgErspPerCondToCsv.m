@@ -95,8 +95,9 @@ end
 
 % Output results to a csv file for each condition
 for nCond = 1:nConditions
+    cRowNames = {STUDY.design(STUDY.currentdesign).cell.case};
     tableResults = array2table(squeeze(arrResults(nCond, :, :)),...
-        'VariableNames', cElecs, 'RowNames', cHeader);
+        'VariableNames', cElecs, 'RowNames', cRowNames);
     
     % Append condition number to csv name
     strOutputFileName = strcat(strOutputCsv, '_cond',num2str(nCond), '.csv');
