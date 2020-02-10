@@ -4,6 +4,9 @@
 % For multiple conditions, multiple csv files will be output with condition
 % number appended like {filename}_{condition_number}.csv
 %
+% Please note that this script assumes same number of subjects for each
+% condition. If this is not true for your study, output may be wrong.
+%
 % Author : Vyom Raval
 % Email: vmr160030@utdallas.edu
 % Date created: 09/12/2019
@@ -16,7 +19,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%% USER INPUT ZONE BEGINS %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Path to file you want to save. Please do not include the .csv extension.
-strOutputCsv = 'C:\eeglab14_1_2b\vyom-git-eeglab-master\BrainLanguageRevision\test';
+strOutputCsv = 'C:\eeglab14_1_1b\git-eeglab-master\BrainLanguageRevision\ManjuTest3';
 
 % Time and frequency range
 arrTimeRange = [0 4000];
@@ -52,29 +55,20 @@ nConditions = arrDataShape(1); % Number of conditions
 nGroups = arrDataShape(2); % Number of groups
 nElecs = size(cElecs, 2); % Number of electrodes
 
-% Get total subjects 
-nSubjects = 0;
-% For each group
-for nGrp = 1:nGroups
-    % For each condition
-    for nCond = 1:nConditions 
-        arrCondData = erspdata{nCond, nGrp}; % Matrix of that condition's data  
-        
-        arrCondDataShape = size(arrCondData);
-        nSubjectsInGroup = arrCondDataShape(end);
-        nSubjects = nSubjects + nSubjectsInGroup;
-    end
-end
+% Get total subjects in each condition. 
+nSubjects = size(STUDY.design(STUDY.currentdesign).cell,2)/nConditions;
 
-arrResults = zeros(nConditions, nSubjects, nElecs); % Matrix of outputs of shape [conditions x subjects]
+% Array of outputs of shape [conditions x subjects x electrodes]
+arrResults = zeros(nConditions, nSubjects, nElecs); 
 
 
 % erspdata has shape [1 x channels x subjects]
 
 
-nShift = 0;
+
 % For each condition
 for nCond = 1:nConditions 
+    nShift = 0;
     % For each group
     for nGrp = 1:nGroups
         arrCondData = erspdata{nCond, nGrp}; % Matrix of that condition's data  
@@ -96,6 +90,20 @@ end
 % Output results to a csv file for each condition
 for nCond = 1:nConditions
     cRowNames = {STUDY.design(STUDY.currentdesign).cell.case};
+    cRowNames = {cRowNames{1:nSubjects}};
+    % If duplicate subjects, concatenate value to subject ID
+    if numel(cRowNames) ~= numel(unique(cRowNames))
+        for nSub=1:nSubjects
+           strToCat = '';
+           cValue = STUDY.design(STUDY.currentdesign).cell(nSub).value;
+           for nVal=1:numel(cValue)
+               strToCat = strcat(strToCat, num2str(cValue{nVal}));
+           end
+           
+           cRowNames{nSub} = strcat(cRowNames{nSub}, '_', strToCat);
+        end        
+    end
+    
     tableResults = array2table(squeeze(arrResults(nCond, :, :)),...
         'VariableNames', cElecs, 'RowNames', cRowNames);
     
