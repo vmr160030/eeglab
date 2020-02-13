@@ -1,22 +1,33 @@
 % Script to obtain average ersp power across specified times, freqs, channels. 
-% Output is of shape [conditions x subjects]
+% Output is of shape [subjects x electrodes] for each condition
+%
+% For multiple conditions, multiple csv files will be output with condition
+% number appended like {filename}_{condition_number}.csv
+%
+% Please note that this script assumes same number of subjects for each
+% condition. If this is not true for your study, output may be wrong.
 %
 % Author : Vyom Raval
 % Email: vmr160030@utdallas.edu
 % Date created: 09/12/2019
-% Last modified: 02/06/2020
-% Tested on: eeglab14.0.0b, eeglab14.1.1b
+% Last modified: 02/13/2020
+% Tested on: eeglab14.0.0b, eeglab14.1.1b, eeglab 14.1.2b
 % Tested using: K:\Dept\CallierResearch\Maguire\RA Folders\Manju\Working Memory\14yrs All 091919.study 
+%               G:\EEGfiles\Research\WLNSF\DevDiff_3ages\3ages_devdiff_022119.study
+%               K:\Dept\CallierResearch\Maguire\Tina\TEST study for Vyom\teststudyforvyom02122020.study
 
 % TODO: Make this a function that takes inputs
 
 %%%%%%%%%%%%%%%%%%%%%%%% USER INPUT ZONE BEGINS %%%%%%%%%%%%%%%%%%%%%%%%%%%
-strOutputCsv = 'C:\eeglab14_1_1b\scriptsForDrMaguire\BrainLanguageRevision\VyomTest.csv'; % Path to file you want to save
+% Path to file you want to save. Please do not include the .csv extension.
+strOutputCsv = 'C:\eeglab14_1_1b\git-eeglab-master\BrainLanguageRevision\TinaTestStudy';
+
+% Time and frequency range
 arrTimeRange = [0 4000];
 arrFreqRange = [4 8];
 
 % Ensure that this has no repeats and each electrode is
-% typed correctly with no spaces like 'C1'
+% typed correctly with no spaces. eg- 'C1'
 cElecs = {'FP1', 'Fpz','FP2','Af3','af4','f7','f5','f3','f1','fz','f2', ...
           'f4','f6','f8','fc5','fc3','fc1','fcz','fc2','fc4','fc6'}; 
 %%%%%%%%%%%%%%%%%%%%%%%% USER INPUT ZONE ENDS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -43,61 +54,62 @@ STUDY = pop_erspparams(STUDY, 'topotime', arrTimeRange,'topofreq', arrFreqRange)
 arrDataShape = size(erspdata); % Shape of ersp data
 nConditions = arrDataShape(1); % Number of conditions
 nGroups = arrDataShape(2); % Number of groups
+nElecs = size(cElecs, 2); % Number of electrodes
 
-% Get total subjects 
-nSubjects = 0;
-% For each group
-for nGrp = 1:nGroups
-    % For each condition
-    for nCond = 1:nConditions 
+% Get total subjects in each condition. 
+nSubjects = size(STUDY.design(STUDY.currentdesign).cases.value,2);
+
+% Array of outputs of shape [conditions x subjects x electrodes]
+arrResults = zeros(nConditions, nSubjects, nElecs); 
+
+
+% erspdata has shape [1 x channels x subjects]
+
+
+
+% For each condition
+for nCond = 1:nConditions 
+    nShift = 0;
+    % For each group
+    for nGrp = 1:nGroups
         arrCondData = erspdata{nCond, nGrp}; % Matrix of that condition's data  
         
-        arrCondDataShape = size(arrCondData);
-        nSubjectsInGroup = arrCondDataShape(end);
-        nSubjects = nSubjects + nSubjectsInGroup;
-    end
-end
-
-arrResults = zeros(nConditions, nSubjects); % Matrix of outputs of shape [conditions x subjects]
-
-
-% erspdata has shape [freqs x times x channels x subjects], or [1 x channels x subjects]
-
-% For each group
-nSubjectsInPrevGroup = 0;
-for nGrp = 1:nGroups
-    % For each condition
-    for nCond = 1:nConditions 
-        arrCondData = erspdata{nCond, nGrp}; % Matrix of that condition's data  
-        
-        arrCondDataShape = size(arrCondData);
-        nSubjectsInGroup = arrCondDataShape(end);
+        nSubjectsInGroup = size(arrCondData, 3);
         
         % For each subject in the group
-        for nSub = nSubjectsInPrevGroup+1:nSubjectsInGroup+nSubjectsInPrevGroup
-            % non subject dimensions
-            strOtherDims = repmat({':'},1,ndims(arrCondData)-1);      
+        for nSub = 1:nSubjectsInGroup
+            % Reshape condition data for a subject to be [1 x channels]
+            arrReshapedData = reshape(arrCondData(:, :, nSub), 1, []);
 
-            % Reshape condition data for a subject to be [1 x freqs*times*channels]
-            arrReshapedData = reshape(arrCondData(strOtherDims{:}, nSub), 1, []);
+            % Save values for each electrode
+            arrResults(nCond, nSub+nShift, :) = arrReshapedData;
+        end    
+        nShift = nSubjectsInGroup + nShift;
+    end  
+end
 
-            % Take the mean over the second dimension, leaving 1 number for each subject
-            arrResults(nCond, nSub) = mean(arrReshapedData, 2);
-        end
+% Output results to a csv file for each condition
+for nCond = 1:nConditions
+    cRowNames = {STUDY.design(STUDY.currentdesign).cell.case};
+    cRowNames = {cRowNames{1:nSubjects}};
+    % If duplicate subjects, concatenate value to subject ID
+    if numel(cRowNames) ~= numel(unique(cRowNames))
+        for nSub=1:nSubjects
+           strToCat = '';
+           cValue = STUDY.design(STUDY.currentdesign).cell(nSub).value;
+           for nVal=1:numel(cValue)
+               strToCat = strcat(strToCat, num2str(cValue{nVal}));
+           end
+           
+           cRowNames{nSub} = strcat(cRowNames{nSub}, '_', strToCat);
+        end        
     end
-    nSubjectsInPrevGroup = nSubjectsInGroup;
+    
+    tableResults = array2table(squeeze(arrResults(nCond, :, :)),...
+        'VariableNames', cElecs, 'RowNames', cRowNames);
+    
+    % Append condition number to csv name
+    strOutputFileName = strcat(strOutputCsv, '_cond',num2str(nCond), '.csv');
+    writetable(tableResults,strOutputFileName, 'WriteRowNames',true);
 end
-
-% Output results to a csv file
-cHeader = STUDY.subject;
-%turn the headers into a single comma seperated string if it is a cell array, 
-header_string = cHeader{1};
-for i = 2:length(cHeader)
-    header_string = [header_string,',',cHeader{i}];
-end
-%write header to file
-fid = fopen(strOutputCsv,'w'); 
-fprintf(fid,'%s\n',header_string);
-fclose(fid);
-%write data to end of file
-dlmwrite(strOutputCsv,arrResults,'-append');
+fclose('all');

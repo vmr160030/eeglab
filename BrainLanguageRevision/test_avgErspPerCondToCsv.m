@@ -10,16 +10,17 @@
 % Author : Vyom Raval
 % Email: vmr160030@utdallas.edu
 % Date created: 09/12/2019
-% Last modified: 02/07/2020
+% Last modified: 02/13/2020
 % Tested on: eeglab14.0.0b, eeglab14.1.1b, eeglab 14.1.2b
 % Tested using: K:\Dept\CallierResearch\Maguire\RA Folders\Manju\Working Memory\14yrs All 091919.study 
 %               G:\EEGfiles\Research\WLNSF\DevDiff_3ages\3ages_devdiff_022119.study
+%               K:\Dept\CallierResearch\Maguire\Tina\TEST study for Vyom\teststudyforvyom02122020.study
 
 % TODO: Make this a function that takes inputs
 
 %%%%%%%%%%%%%%%%%%%%%%%% USER INPUT ZONE BEGINS %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Path to file you want to save. Please do not include the .csv extension.
-strOutputCsv = 'C:\eeglab14_1_1b\git-eeglab-master\BrainLanguageRevision\ManjuTest3';
+strOutputCsv = 'C:\eeglab14_1_1b\git-eeglab-master\BrainLanguageRevision\TinaTestStudy';
 
 % Time and frequency range
 arrTimeRange = [0 4000];
@@ -56,7 +57,7 @@ nGroups = arrDataShape(2); % Number of groups
 nElecs = size(cElecs, 2); % Number of electrodes
 
 % Get total subjects in each condition. 
-nSubjects = size(STUDY.design(STUDY.currentdesign).cell,2)/nConditions;
+nSubjects = size(STUDY.design(STUDY.currentdesign).cases.value,2);
 
 % Array of outputs of shape [conditions x subjects x electrodes]
 arrResults = zeros(nConditions, nSubjects, nElecs); 
