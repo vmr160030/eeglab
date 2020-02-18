@@ -91,19 +91,6 @@ end
 % Output results to a csv file for each condition
 for nCond = 1:nConditions
     cRowNames = {STUDY.design(STUDY.currentdesign).cases.value}};
-    cRowNames = {cRowNames{1:nSubjects}};
-    % If duplicate subjects, concatenate value to subject ID
-    if numel(cRowNames) ~= numel(unique(cRowNames))
-        for nSub=1:nSubjects
-           strToCat = '';
-           cValue = STUDY.design(STUDY.currentdesign).cell(nSub).value;
-           for nVal=1:numel(cValue)
-               strToCat = strcat(strToCat, num2str(cValue{nVal}));
-           end
-           
-           cRowNames{nSub} = strcat(cRowNames{nSub}, '_', strToCat);
-        end        
-    end
     
     tableResults = array2table(squeeze(arrResults(nCond, :, :)),...
         'VariableNames', cElecs, 'RowNames', cRowNames);
