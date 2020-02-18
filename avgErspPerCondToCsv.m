@@ -10,7 +10,7 @@
 % Author : Vyom Raval
 % Email: vmr160030@utdallas.edu
 % Date created: 09/12/2019
-% Last modified: 02/13/2020
+% Last modified: 02/18/2020
 % Tested on: eeglab14.0.0b, eeglab14.1.1b, eeglab 14.1.2b
 % Tested using: K:\Dept\CallierResearch\Maguire\RA Folders\Manju\Working Memory\14yrs All 091919.study 
 %               G:\EEGfiles\Research\WLNSF\DevDiff_3ages\3ages_devdiff_022119.study
@@ -90,7 +90,7 @@ end
 
 % Output results to a csv file for each condition
 for nCond = 1:nConditions
-    cRowNames = {STUDY.design(STUDY.currentdesign).cell.case};
+    cRowNames = {STUDY.design(STUDY.currentdesign).cases.value}};
     cRowNames = {cRowNames{1:nSubjects}};
     % If duplicate subjects, concatenate value to subject ID
     if numel(cRowNames) ~= numel(unique(cRowNames))
