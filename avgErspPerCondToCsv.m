@@ -90,7 +90,7 @@ end
 
 % Output results to a csv file for each condition
 for nCond = 1:nConditions
-    cRowNames = {STUDY.design(STUDY.currentdesign).cases.value}};
+    cRowNames = STUDY.design(STUDY.currentdesign).cases.value;
     
     tableResults = array2table(squeeze(arrResults(nCond, :, :)),...
         'VariableNames', cElecs, 'RowNames', cRowNames);
